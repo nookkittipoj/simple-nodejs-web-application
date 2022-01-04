@@ -1,0 +1,40 @@
+version: "3.3"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - "./data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: party_haan
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 8000:80
+    environment:
+      PMA_PASSWORD: password
+      PMA_USER: root
+      PMA_HOSTS: mysql
+  backend:
+    build: ./backend
+    image: backend:dev
+    container_name: backend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+  frontend:
+    build: ./frontend
+    image: frontend
+    container_name: frontend
+    ports:
+      - 8080:80
